@@ -1,0 +1,99 @@
+class guerreiro():
+  def __init__ (self, nome, pontos_vida, forca_ataque):
+    self.nome = nome
+    self.pontos_vida = pontos_vida
+    self.forca_ataque = forca_ataque
+    self.arma = None  #(Item 9) Arma associada ao herói
+
+  def informacoes(self):
+    print(f"Nome: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}")
+    if self.arma:
+      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
+
+  #(6) Ação de ataque
+  def atacar(self, inimigo):
+    dano_total = self.forca_ataque
+    if self.arma:  #(10) Considera o poder da arma
+      dano_total += self.arma.poder_dano
+    print(f"{self.nome} ataca {inimigo.nome} causando {dano_total} de dano!")
+    inimigo.pontos_vida -= dano_total
+
+
+class mago():
+  def __init__ (self, nome, pontos_vida, forca_ataque, tipo_magia):
+    self.nome = nome
+    self.pontos_vida = pontos_vida
+    self.forca_ataque = forca_ataque
+    self.tipo_magia = tipo_magia
+    self.arma = None
+
+  def informacoes(self):
+    print(f"Nome: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}\nTipo de magia: {self.tipo_magia}")
+    if self.arma:
+      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
+
+  def atacar(self, inimigo):
+    dano_total = self.forca_ataque
+    if self.arma:
+      dano_total += self.arma.poder_dano
+    print(f"{self.nome} lança {self.tipo_magia} em {inimigo.nome}, causando {dano_total} de dano!")
+    inimigo.pontos_vida -= dano_total
+
+
+class arqueiro():
+  def __init__ (self, nome, pontos_vida, forca_ataque, precisao_arco):
+    self.nome = nome
+    self.pontos_vida = pontos_vida
+    self.forca_ataque = forca_ataque
+    self.precisao_arco = precisao_arco
+    self.arma = None
+
+  def informacoes(self):
+    print(f"Nome: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}\nPrecisão do arco: {self.precisao_arco}")
+    if self.arma:
+      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
+
+  def atacar(self, inimigo):
+    dano_total = self.forca_ataque
+    if self.arma:
+      dano_total += self.arma.poder_dano
+    print(f"{self.nome} dispara uma flecha em {inimigo.nome}, causando {dano_total} de dano!")
+    inimigo.pontos_vida -= dano_total
+
+
+class inimigo():
+  def __init__ (self, nome, pontos_vida, forca_ataque):
+    self.nome = nome
+    self.pontos_vida = pontos_vida
+    self.forca_ataque = forca_ataque
+
+  def informacoes(self):
+    print(f"Inimigo: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}")
+
+  def atacar(self, heroi):
+    print(f"{self.nome} ataca {heroi.nome}, causando {self.forca_ataque} de dano!")
+    heroi.pontos_vida -= self.forca_ataque
+
+
+#(7) Classe Arma
+class Arma:
+  def __init__(self, nome, poder_dano):
+    self.nome = nome
+    self.poder_dano = poder_dano
+
+
+#(8) Classe Poção
+class Pocao:
+  def __init__(self, nome, valor_cura):
+    self.nome = nome
+    self.valor_cura = valor_cura
+
+  def usar(self, heroi):
+    heroi.pontos_vida += self.valor_cura
+    print(f"{heroi.nome} usou {self.nome} e recuperou {self.valor_cura} de vida!")
+
+
+#(9) Equipar Arma
+def equipar_arma(heroi, arma):
+  heroi.arma = arma
+  print(f"{heroi.nome} equipou {arma.nome}!")
