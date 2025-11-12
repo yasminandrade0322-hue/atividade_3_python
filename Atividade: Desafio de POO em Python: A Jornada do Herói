@@ -1,3 +1,4 @@
+#Parte de Yasmim
 class guerreiro():
   def __init__ (self, nome, pontos_vida, forca_ataque):
     self.nome = nome
@@ -66,6 +67,8 @@ class inimigo():
     self.nome = nome
     self.pontos_vida = pontos_vida
     self.forca_ataque = forca_ataque
+
+#Parte de Mateus
 
   def informacoes(self):
     print(f"Inimigo: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}")
