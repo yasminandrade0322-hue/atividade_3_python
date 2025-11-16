@@ -1,138 +1,187 @@
-#Parte de Yasmim
+# -----------------------
+# Parte feita por Yasmim
+# -----------------------
 
-class personagem():
-  def __init__ (self, nome, pontos_vida, forca_ataque):
-    self.nome = nome
-    self._pontos_vida = pontos_vida
-    self.forca_ataque = forca_ataque
-
-  def get_pontos_vida(self):
-    return self._pontos_vida #retorna o valor atual dos pontos de vida
-
-  def set_pontos_vida(self, novo_valor):
-    if novo_valor < 0:
-      self._pontos_vida = 0 #impede valores negativos
-    else:
-      self._pontos_vida = novo_valor
-
-  def receber_dano(self, dano):
-    if dano < 0:
-      dano = 0 
-    nova_vida = self._pontos_vida - dano
-    self.set_pontos_vida = nova_vida
-
-  
-
-class guerreiro(personagem):
-  def __init__ (self, nome, _pontos_vida, forca_ataque):
-    super().__init__(nome, _pontos_vida, forca_ataque)
-    self.arma = None  #Arma do herói
-
-  def informacoes(self):
-    print(f"Nome: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}")
-    if self.arma:
-      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
-
-  def atacar(self, inimigo):
-    dano_total = self.forca_ataque
-    if self.arma:  #Considera o poder da arma
-      dano_total += self.arma.poder_dano
-    print(f"{self.nome} ataca {inimigo.nome} causando {dano_total} de dano!")
-    inimigo._pontos_vida -= dano_total
-    inimigo.receber_dano(dano_total) #dano aplicado de forma segura(a vida não fica negativa)
+# Questão 7 / 15 - Item base (usado por Arma e Poção)
+class Item:
+    def __init__(self, nome):
+        self.nome = nome
 
 
-class mago(personagem):
-  def __init__ (self, nome, _pontos_vida, forca_ataque, tipo_magia):
-    super().__init__(nome, _pontos_vida, forca_ataque)
-    self.tipo_magia = tipo_magia
-    self.arma = None
-
-  def informacoes(self):
-    print(f"Nome: {self.nome}\nPontos de vida: {self._pontos_vida}\nForça de ataque: {self.forca_ataque}\nTipo de magia: {self.tipo_magia}")
-    if self.arma:
-      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
-
-  def atacar(self, inimigo):
-    dano_total = self.forca_ataque
-    if self.arma:
-      dano_total += self.arma.poder_dano
-    print(f"{self.nome} lança {self.tipo_magia} em {inimigo.nome}, causando {dano_total} de dano!")
-    inimigo._pontos_vida -= dano_total
-    inimigo.receber_dano(dano_total)
+# Questão 7 - Arma (herda de Item)
+class Arma(Item):
+    def __init__(self, nome, poder_dano):
+        super().__init__(nome)
+        self.poder_dano = poder_dano
 
 
-class arqueiro(personagem):
-  def __init__ (self, nome, _pontos_vida, forca_ataque, precisao_arco):
-    super().__init__(nome, _pontos_vida, forca_ataque)
-    self.precisao_arco = precisao_arco
-    self.arma = None
+# Questão 8 - Poção (herda de Item)
+class Pocao(Item):
+    def __init__(self, nome, valor_cura):
+        super().__init__(nome)
+        self.valor_cura = valor_cura
 
-  def informacoes(self):
-    print(f"Nome: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}\nPrecisão do arco: {self.precisao_arco}")
-    if self.arma:
-      print(f"Arma equipada: {self.arma.nome} (Dano: {self.arma.poder_dano})")
-
-  def atacar(self, inimigo):
-    dano_total = self.forca_ataque
-    if self.arma:
-      dano_total += self.arma.poder_dano
-    print(f"{self.nome} dispara uma flecha em {inimigo.nome}, causando {dano_total} de dano!")
-    inimigo._pontos_vida -= dano_total
-    inimigo.receber_dano(dano_total)
+    # Questão 17 - usar poção respeitando vida máxima
+    def usar(self, personagem):
+        vida_antes = personagem.get_pontos_vida()
+        personagem.set_pontos_vida(vida_antes + self.valor_cura)
+        cura_real = personagem.get_pontos_vida() - vida_antes
+        print(f"{personagem.nome} usou {self.nome} e recuperou {cura_real} de vida.")
 
 
-class inimigo():
-  def __init__ (self, nome, pontos_vida, forca_ataque):
-    self.nome = nome
-    self._pontos_vida = pontos_vida
-    self.forca_ataque = forca_ataque
+# Questão 15 - Inventário (modelo simples)
+class Inventario:
+    def __init__(self):
+        self.itens = []
 
-#Parte de Mateus
+    def adicionar_item(self, item):
+        self.itens.append(item)
+        print(f"{item.nome} adicionado ao inventário.")
 
-  def informacoes(self):
-    print(f"Inimigo: {self.nome}\nPontos de vida: {self.pontos_vida}\nForça de ataque: {self.forca_ataque}")
+    def remover_item(self, item):
+        if item in self.itens:
+            self.itens.remove(item)
+            print(f"{item.nome} removido do inventário.")
+        else:
+            print(f"{item.nome} não encontrado no inventário.")
 
-  def atacar(self, heroi):
-    print(f"{self.nome} ataca {heroi.nome}, causando {self.forca_ataque} de dano!")
-    heroi._pontos_vida -= self.forca_ataque
-
-#parte yasmin
-class item():
-  def __init__(self, nome):
-    self.nome = nome
-
-class iventario():
-  def __init__(self):
-    self.itens = []
-
-  def adicionar_item(self, item):
-    self.itens.append(item)
-    print(f"{item.nome} adicionado ao iventário!")
-  
-  def remover_item(self, item):
-    if item in self.itens:
-      self.itens.remove(item)
-      print(f"{item.nome} removido do iventário!")
-    else:
-      print(f"{item.nome} não encontrado no iventário!")
-
-#parte mateus
-class Arma(item):
-  def __init__(self, nome, poder_dano):
-    super().__init__(nome)
-    self.poder_dano = poder_dano
+    # Questão 17 - usar poção do inventário (procura por nome e usa a primeira encontrada)
+    def usar_pocao(self, personagem, nome_pocao):
+        for i, it in enumerate(self.itens):
+            if isinstance(it, Pocao) and it.nome == nome_pocao:
+                it.usar(personagem)
+                # remover poção após uso
+                self.itens.pop(i)
+                return True
+        print(f"Nenhuma poção '{nome_pocao}' encontrada no inventário.")
+        return False
 
 
-class Pocao(item):
-  def __init__(self, nome, valor_cura):
-    super().__init__(nome)
-    self.valor_cura = valor_cura
+# Questão 11 - Classe base Personagem (evita repetição)
+class Personagem:
+    def __init__(self, nome, pontos_vida, forca_ataque):
+        self.nome = nome
+        self._pontos_vida = pontos_vida
+        self.pontos_vida_max = pontos_vida  # usado para não ultrapassar cura (Questão 12)
+        self.forca_ataque = forca_ataque
+        self.arma = None
+        self.inventario = Inventario()  # Questão 16 - inventário integrado
 
-  def usar(self, heroi):
-    heroi.pontos_vida += self.valor_cura
-    print(f"{heroi.nome} usou {self.nome} e recuperou {self.valor_cura} de vida!")
+    def __str__(self):
+        return f"{self.nome} - Vida: {self._pontos_vida}/{self.pontos_vida_max} - Força: {self.forca_ataque}"
 
-  def equipar_arma(heroi, arma):
-    heroi.arma = arma
-    print(f"{heroi.nome} equipou {arma.nome}!")
+    # Questão 12 - proteger vida (getter)
+    def get_pontos_vida(self):
+        return self._pontos_vida
+
+    # Questão 12 - proteger vida (setter)
+    def set_pontos_vida(self, novo_valor):
+        if novo_valor < 0:
+            self._pontos_vida = 0
+        elif novo_valor > self.pontos_vida_max:
+            self._pontos_vida = self.pontos_vida_max
+        else:
+            self._pontos_vida = novo_valor
+
+    # Questão 13 - receber_dano (garante não ficar abaixo de zero)
+    def receber_dano(self, dano):
+        if dano < 0:
+            dano = 0
+        self.set_pontos_vida(self._pontos_vida - dano)
+
+    # Questão 20 - esta_vivo
+    def esta_vivo(self):
+        return self._pontos_vida > 0
+
+    # Questão 14 - ataque genérico (soma força base + arma)
+    def atacar(self, alvo):
+        dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
+        print(f"{self.nome} ataca {alvo.nome}, causando {dano} de dano.")
+        alvo.receber_dano(dano)
+# -----------------------
+# Continuação - integração das classes (sem mudar autoria)
+# -----------------------
+
+# Questão 1 / 18 - Guerreiro (herda de Personagem)
+class Guerreiro(Personagem):
+    def __init__(self, nome, pontos_vida, forca_ataque):
+        super().__init__(nome, pontos_vida, forca_ataque)
+
+    # Questão 18 - ataque único (Guerreiro)
+    def atacar(self, alvo):
+        dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
+        print(f"{self.nome} (Guerreiro) desfere um golpe poderoso em {alvo.nome}, causando {dano} de dano.")
+        alvo.receber_dano(dano)
+
+
+# Questão 2 / 18 - Mago (herda de Personagem)
+class Mago(Personagem):
+    def __init__(self, nome, pontos_vida, forca_ataque, tipo_magia):
+        super().__init__(nome, pontos_vida, forca_ataque)
+        self.tipo_magia = tipo_magia
+
+    # Questão 18 - ataque do mago
+    def atacar(self, alvo):
+        dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
+        print(f"{self.nome} (Mago) usa {self.tipo_magia} contra {alvo.nome}, causando {dano} de dano.")
+        alvo.receber_dano(dano)
+
+
+# Questão 3 / 18 - Arqueiro (herda de Personagem)
+class Arqueiro(Personagem):
+    def __init__(self, nome, pontos_vida, forca_ataque, precisao_arco):
+        super().__init__(nome, pontos_vida, forca_ataque)
+        self.precisao_arco = precisao_arco
+
+    # Questão 18 - ataque do arqueiro
+    def atacar(self, alvo):
+        dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
+        print(f"{self.nome} (Arqueiro) dispara flecha com precisão {self.precisao_arco} em {alvo.nome}, causando {dano} de dano.")
+        alvo.receber_dano(dano)
+
+
+# Questão 7 / 8 - Instâncias pedidas: Espada Longa, Cajado Mágico e Poção de Vida
+espada_longa = Arma("Espada Longa", 10)
+cajado_magico = Arma("Cajado Mágico", 8)
+pocao_vida = Pocao("Poção de Vida", 20)
+
+
+# Questão 9 - função para equipar arma em personagem (mantida como utilidade)
+def equipar_arma(personagem, arma):
+    personagem.arma = arma
+    print(f"{personagem.nome} equipou {arma.nome}.")
+# -----------------------
+# Parte feita por Mateus
+# -----------------------
+
+# Questão 4 / 14 / 13 / 20 - Classe Monstro (genérica)
+class Monstro:
+    def __init__(self, nome, pontos_vida, forca_ataque):
+        self.nome = nome
+        self._pontos_vida = pontos_vida
+        self.forca_ataque = forca_ataque
+
+    def __str__(self):
+        return f"{self.nome} (Monstro) - Vida: {self._pontos_vida} - Força: {self.forca_ataque}"
+
+    # Questão 14 - atacar
+    def atacar(self, alvo):
+        print(f"{self.nome} ataca {alvo.nome}, causando {self.forca_ataque} de dano.")
+        alvo.receber_dano(self.forca_ataque)
+
+    # Questão 13 - receber dano (garante não negativo)
+    def receber_dano(self, dano):
+        if dano < 0:
+            dano = 0
+        self._pontos_vida = max(0, self._pontos_vida - dano)
+
+    # Questão 20 - esta_vivo
+    def esta_vivo(self):
+        return self._pontos_vida > 0
+
+
+# Questão 19 - Fábrica de Monstros (Goblin padrão)
+class FabricaDeMonstros:
+    @staticmethod
+    def goblin_padrao():
+        return Monstro("Goblin", 30, 5)
