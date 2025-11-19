@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+import random
 # -----------------------
 # Parte feita por Yasmim
 # -----------------------
@@ -59,13 +61,16 @@ class Inventario:
 
 # Questão 11 - Classe base Personagem (evita repetição)
 class Personagem:
-    def __init__(self, nome, pontos_vida, forca_ataque):
+    def __init__(self, nome, pontos_vida, forca_ataque, mana_max=50):
         self.nome = nome
         self._pontos_vida = pontos_vida
         self.pontos_vida_max = pontos_vida  # usado para não ultrapassar cura (Questão 12)
         self.forca_ataque = forca_ataque
         self.arma = None
         self.inventario = Inventario()  # Questão 16 - inventário integrado
+        self.mana = mana_max
+        self.mana_max = mana_max
+        self.habilidades = []
 
     def __str__(self):
         return f"{self.nome} - Vida: {self._pontos_vida}/{self.pontos_vida_max} - Força: {self.forca_ataque}"
@@ -96,8 +101,23 @@ class Personagem:
     # Questão 14 - ataque genérico (soma força base + arma)
     def atacar(self, alvo):
         dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
+        dano_sorte = Dado.rolar(6) # Questão 25 - Combate imprevisível
+        if dano_sorte > 3:
+            dano = dano * 2
         print(f"{self.nome} ataca {alvo.nome}, causando {dano} de dano.")
         alvo.receber_dano(dano)
+
+    # Questão 23 - Usando habilidade
+    def aprender_habilidade(self, habilidade):
+        self.habilidades.append(habilidade)
+    
+    def usar_habilidade(self, indice, alvo):
+        if 0 <= indice < len(self.habilidades):
+            habilidade_escolhida = self.habilidades[indice]
+            return self.usar_habilidade(habilidade_escolhida, alvo)
+        else:
+            print(f"{self.nome} não tem habilidades.")
+        
 # -----------------------
 # Continuação - integração das classes (sem mudar autoria)
 # -----------------------
@@ -185,3 +205,42 @@ class FabricaDeMonstros:
     @staticmethod
     def goblin_padrao():
         return Monstro("Goblin", 30, 5)
+
+# Questão 21 - Molde de habilidade
+class habilidade(ABC):
+  def __init__(self, nome, custo):
+    self.nome = nome
+    self.custo = custo
+
+    @abstractmethod
+    def usar(self, alvo):
+        pass
+
+# Questão 22 - Habilidade Forte
+class AtaqueForte(habilidade):
+  def __init__(self):
+    super().__init__("Ataque forte", 20)
+
+  def usar(self, alvo):
+    dano = 30
+    print(f"{self.nome} usada em {alvo.nome}, causando {dano} de dano.")
+    alvo.receber_dano(dano)
+
+# Questão 22 - Habilidade Ataque bola de fogo
+class AtaqueBolaFogo(habilidade):
+  def __init__(self):
+    super().__init__("Bola de fogo", 20)
+
+  def usar(self, alvo):
+    dano = 20
+    print(f"{self.nome} lançada em {alvo.nome}, causando {dano} de dano.")
+    alvo.receber_dano(dano)
+
+# Questão 24 - A sorte esta lançada
+class dado():
+  def __init__(self, faces):
+    self.faces = faces
+
+  def rolar(self):
+    print(f"Rolando um D{self.faces}...")
+    return random.randint(1, self.faces)
