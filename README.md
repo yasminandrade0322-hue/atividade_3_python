@@ -1,4 +1,4 @@
-# atividade_3_python - Dupla: Mateus e Yasmim
+# atividade_3_python - Dupla: Mateus Henrique de almeida Silva e Yasmim
 
 README – Sistema de RPG (Questões 1 a 30)
 
