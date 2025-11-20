@@ -1,29 +1,29 @@
 from abc import ABC, abstractmethod
 import random
+
 # -----------------------
 # Parte feita por Yasmim
 # -----------------------
 
-# Questão 7 / 15 - Item base (usado por Arma e Poção)
+#Questão 7 / 15 - Item base
 class Item:
     def __init__(self, nome):
         self.nome = nome
 
 
-# Questão 7 - Arma (herda de Item)
+#Questão 7 - Arma
 class Arma(Item):
     def __init__(self, nome, poder_dano):
         super().__init__(nome)
         self.poder_dano = poder_dano
 
 
-# Questão 8 - Poção (herda de Item)
+#Questão 8 - Poção
 class Pocao(Item):
     def __init__(self, nome, valor_cura):
         super().__init__(nome)
         self.valor_cura = valor_cura
 
-    # Questão 17 - usar poção respeitando vida máxima
     def usar(self, personagem):
         vida_antes = personagem.get_pontos_vida()
         personagem.set_pontos_vida(vida_antes + self.valor_cura)
@@ -31,7 +31,7 @@ class Pocao(Item):
         print(f"{personagem.nome} usou {self.nome} e recuperou {cura_real} de vida.")
 
 
-# Questão 15 - Inventário (modelo simples)
+#Questão 15 - Inventário
 class Inventario:
     def __init__(self):
         self.itens = []
@@ -47,27 +47,25 @@ class Inventario:
         else:
             print(f"{item.nome} não encontrado no inventário.")
 
-    # Questão 17 - usar poção do inventário (procura por nome e usa a primeira encontrada)
     def usar_pocao(self, personagem, nome_pocao):
         for i, it in enumerate(self.itens):
             if isinstance(it, Pocao) and it.nome == nome_pocao:
                 it.usar(personagem)
-                # remover poção após uso
                 self.itens.pop(i)
                 return True
-        print(f"Nenhuma poção '{nome_pocao}' encontrada no inventário.")
+        print(f"Nenhuma poção '{nome_pocao}' encontrada.")
         return False
 
 
-# Questão 11 - Classe base Personagem (evita repetição)
+#Questão 11 – Classe base Personagem
 class Personagem:
     def __init__(self, nome, pontos_vida, forca_ataque, mana_max=50):
         self.nome = nome
         self._pontos_vida = pontos_vida
-        self.pontos_vida_max = pontos_vida  # usado para não ultrapassar cura (Questão 12)
+        self.pontos_vida_max = pontos_vida
         self.forca_ataque = forca_ataque
         self.arma = None
-        self.inventario = Inventario()  # Questão 16 - inventário integrado
+        self.inventario = Inventario()
         self.mana = mana_max
         self.mana_max = mana_max
         self.habilidades = []
@@ -75,11 +73,10 @@ class Personagem:
     def __str__(self):
         return f"{self.nome} - Vida: {self._pontos_vida}/{self.pontos_vida_max} - Força: {self.forca_ataque}"
 
-    # Questão 12 - proteger vida (getter)
+    #Questão 12 - getters/setters protegidos
     def get_pontos_vida(self):
         return self._pontos_vida
 
-    # Questão 12 - proteger vida (setter)
     def set_pontos_vida(self, novo_valor):
         if novo_valor < 0:
             self._pontos_vida = 0
@@ -88,93 +85,94 @@ class Personagem:
         else:
             self._pontos_vida = novo_valor
 
-    # Questão 13 - receber_dano (garante não ficar abaixo de zero)
+    #Questão 13 - receber dano
     def receber_dano(self, dano):
         if dano < 0:
             dano = 0
         self.set_pontos_vida(self._pontos_vida - dano)
 
-    # Questão 20 - esta_vivo
+    #Questão 20 - está vivo
     def esta_vivo(self):
         return self._pontos_vida > 0
 
-    # Questão 14 - ataque genérico (soma força base + arma)
+    #Questão 14 - ataque genérico
     def atacar(self, alvo):
         dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
-        dano_sorte = Dado.rolar(6) # Questão 25 - Combate imprevisível
-        if dano_sorte > 3:
-            dano = dano * 2
         print(f"{self.nome} ataca {alvo.nome}, causando {dano} de dano.")
         alvo.receber_dano(dano)
 
-    # Questão 23 - Usando habilidade
+    #Questão 23 - habilidades
     def aprender_habilidade(self, habilidade):
         self.habilidades.append(habilidade)
-    
-    def usar_habilidade(self, indice, alvo):
-        if 0 <= indice < len(self.habilidades):
-            habilidade_escolhida = self.habilidades[indice]
-            return self.usar_habilidade(habilidade_escolhida, alvo)
-        else:
-            print(f"{self.nome} não tem habilidades.")
-        
+
+    def usar_habilidade(self, habilidade, alvo):
+        habilidade.usar(alvo)
+
+
+#Questão 24 - Dado
+class Dado:
+    def __init__(self, faces):
+        self.faces = faces
+
+    def rolar(self):
+        print(f"Rolando D{self.faces}...")
+        return random.randint(1, self.faces)
+
 # -----------------------
-# Continuação - integração das classes (sem mudar autoria)
+# feita Mateus
 # -----------------------
 
-# Questão 1 / 18 - Guerreiro (herda de Personagem)
+#Questão 1 – Guerreiro
 class Guerreiro(Personagem):
     def __init__(self, nome, pontos_vida, forca_ataque):
         super().__init__(nome, pontos_vida, forca_ataque)
 
-    # Questão 18 - ataque único (Guerreiro)
     def atacar(self, alvo):
         dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
-        print(f"{self.nome} (Guerreiro) desfere um golpe poderoso em {alvo.nome}, causando {dano} de dano.")
+        print(f"{self.nome} (Guerreiro) realiza golpe poderoso em {alvo.nome}, causando {dano}.")
         alvo.receber_dano(dano)
 
 
-# Questão 2 / 18 - Mago (herda de Personagem)
+#Questão 2 – Mago
 class Mago(Personagem):
     def __init__(self, nome, pontos_vida, forca_ataque, tipo_magia):
         super().__init__(nome, pontos_vida, forca_ataque)
         self.tipo_magia = tipo_magia
 
-    # Questão 18 - ataque do mago
     def atacar(self, alvo):
         dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
-        print(f"{self.nome} (Mago) usa {self.tipo_magia} contra {alvo.nome}, causando {dano} de dano.")
+        print(f"{self.nome} (Mago) lança {self.tipo_magia} em {alvo.nome}, causando {dano}.")
         alvo.receber_dano(dano)
 
 
-# Questão 3 / 18 - Arqueiro (herda de Personagem)
+#Questão 3 – Arqueiro
 class Arqueiro(Personagem):
-    def __init__(self, nome, pontos_vida, forca_ataque, precisao_arco):
+    def __init__(self, nome, pontos_vida, forca_ataque, precisao):
         super().__init__(nome, pontos_vida, forca_ataque)
-        self.precisao_arco = precisao_arco
+        self.precisao = precisao
 
-    # Questão 18 - ataque do arqueiro
     def atacar(self, alvo):
         dano = self.forca_ataque + (self.arma.poder_dano if self.arma else 0)
-        print(f"{self.nome} (Arqueiro) dispara flecha com precisão {self.precisao_arco} em {alvo.nome}, causando {dano} de dano.")
+        print(f"{self.nome} (Arqueiro) dispara flecha com precisão {self.precisao} em {alvo.nome}, causando {dano}.")
         alvo.receber_dano(dano)
 
 
-# Questão 7 / 8 - Instâncias pedidas: Espada Longa, Cajado Mágico e Poção de Vida
+#Questão 7/8 – Instâncias pedidas
 espada_longa = Arma("Espada Longa", 10)
 cajado_magico = Arma("Cajado Mágico", 8)
 pocao_vida = Pocao("Poção de Vida", 20)
 
 
-# Questão 9 - função para equipar arma em personagem (mantida como utilidade)
 def equipar_arma(personagem, arma):
     personagem.arma = arma
     print(f"{personagem.nome} equipou {arma.nome}.")
+
+
 # -----------------------
-# Parte feita por Mateus
+# Parte feita por Mateus + Yasmim
 # -----------------------
 
-# Questão 4 / 14 / 13 / 20 - Classe Monstro (genérica)
+#Questão 4 – Monstro
 class Monstro:
     def __init__(self, nome, pontos_vida, forca_ataque):
         self.nome = nome
@@ -182,65 +180,134 @@ class Monstro:
         self.forca_ataque = forca_ataque
 
     def __str__(self):
-        return f"{self.nome} (Monstro) - Vida: {self._pontos_vida} - Força: {self.forca_ataque}"
+        return f"{self.nome} - Vida: {self._pontos_vida}"
 
-    # Questão 14 - atacar
     def atacar(self, alvo):
-        print(f"{self.nome} ataca {alvo.nome}, causando {self.forca_ataque} de dano.")
+        print(f"{self.nome} ataca {alvo.nome}, causando {self.forca_ataque}.")
         alvo.receber_dano(self.forca_ataque)
 
-    # Questão 13 - receber dano (garante não negativo)
     def receber_dano(self, dano):
-        if dano < 0:
-            dano = 0
         self._pontos_vida = max(0, self._pontos_vida - dano)
 
-    # Questão 20 - esta_vivo
     def esta_vivo(self):
         return self._pontos_vida > 0
 
 
-# Questão 19 - Fábrica de Monstros (Goblin padrão)
+#Questão 19 – Fábrica
 class FabricaDeMonstros:
     @staticmethod
     def goblin_padrao():
         return Monstro("Goblin", 30, 5)
 
-# Questão 21 - Molde de habilidade
-class habilidade(ABC):
-  def __init__(self, nome, custo):
-    self.nome = nome
-    self.custo = custo
+
+#Questão 21 – Habilidade base
+class Habilidade(ABC):
+    def __init__(self, nome, custo):
+        self.nome = nome
+        self.custo = custo
 
     @abstractmethod
     def usar(self, alvo):
         pass
 
-# Questão 22 - Habilidade Forte
-class AtaqueForte(habilidade):
-  def __init__(self):
-    super().__init__("Ataque forte", 20)
 
-  def usar(self, alvo):
-    dano = 30
-    print(f"{self.nome} usada em {alvo.nome}, causando {dano} de dano.")
-    alvo.receber_dano(dano)
+#Questão 22 – Habilidade: Ataque forte
+class AtaqueForte(Habilidade):
+    def __init__(self):
+        super().__init__("Ataque Forte", 20)
 
-# Questão 22 - Habilidade Ataque bola de fogo
-class AtaqueBolaFogo(habilidade):
-  def __init__(self):
-    super().__init__("Bola de fogo", 20)
+    def usar(self, alvo):
+        dano = 30
+        print(f"{self.nome} causa {dano} em {alvo.nome}.")
+        alvo.receber_dano(dano)
 
-  def usar(self, alvo):
-    dano = 20
-    print(f"{self.nome} lançada em {alvo.nome}, causando {dano} de dano.")
-    alvo.receber_dano(dano)
 
-# Questão 24 - A sorte esta lançada
-class dado():
-  def __init__(self, faces):
-    self.faces = faces
+#Questão 22 – Bola de fogo
+class AtaqueBolaFogo(Habilidade):
+    def __init__(self):
+        super().__init__("Bola de Fogo", 20)
 
-  def rolar(self):
-    print(f"Rolando um D{self.faces}...")
-    return random.randint(1, self.faces)
+    def usar(self, alvo):
+        dano = 20
+        print(f"{self.nome} explode em {alvo.nome}, causando {dano}.")
+        alvo.receber_dano(dano)
+
+# -----------------------
+# Feita por Mateus
+# -----------------------
+
+#Questão 25 - Combate imprevisível usando Dado
+class SistemaDeCombate:
+    @staticmethod
+    def ataque_com_sorte(atacante, alvo):
+        dado = Dado(6)
+        rolagem = dado.rolar()
+        dano = atacante.forca_ataque
+        if atacante.arma:
+            dano += atacante.arma.poder_dano
+        
+        if rolagem == 6:
+            dano *= 2
+            print("Acerto crítico!")
+        
+        print(f"{atacante.nome} causa {dano} de dano em {alvo.nome}.")
+        alvo.receber_dano(dano)
+
+
+#Questão 26 - Movimento simples
+class Movimento:
+    def __init__(self, nome):
+        self.nome = nome
+
+    def executar(self, personagem):
+        print(f"{personagem.nome} realizou o movimento: {self.nome}")
+
+
+#Questão 27 - Sistema de Level
+class Level:
+    def __init__(self, nivel=1, xp=0):
+        self.nivel = nivel
+        self.xp = xp
+
+    def ganhar_xp(self, quantidade):
+        self.xp += quantidade
+        print(f"XP atual: {self.xp}")
+
+        if self.xp >= 100:
+            self.nivel += 1
+            self.xp -= 100
+            print(f" Subiu para o nível {self.nivel}!")
+
+
+#Questão 28 - Missões
+class Missao:
+    def __init__(self, titulo, descricao, recompensa):
+        self.titulo = titulo
+        self.descricao = descricao
+        self.recompensa = recompensa
+
+    def concluir(self, personagem):
+        print(f"Missão '{self.titulo}' concluída!")
+        personagem.inventario.adicionar_item(self.recompensa)
+
+
+#Questão 29 - NPCs
+class NPC:
+    def __init__(self, nome, fala):
+        self.nome = nome
+        self.fala = fala
+
+    def conversar(self):
+        print(f"{self.nome} diz: {self.fala}")
+
+
+#Questão 30 - Sistema de diálogo avançado
+class Dialogo:
+    def __init__(self, npc, opcoes):
+        self.npc = npc
+        self.opcoes = opcoes
+
+    def iniciar(self):
+        print(f"{self.npc.nome}: {self.npc.fala}")
+        for i, opcao in enumerate(self.opcoes):
+            print(f"[{i}] {opcao}")
